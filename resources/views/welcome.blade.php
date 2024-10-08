@@ -91,7 +91,7 @@
         @if (Route::has('login'))
         <div class="nav-links">
             @auth
-            <a href="{{ url('/dashboard') }}" class="text-sm underline">Dashboard</a>
+            <a href="{{ url('/photos') }}" class="text-sm underline">photos</a>
             @else
             <a href="{{ route('login') }}" class="text-sm underline">Log in</a>
             @if (Route::has('register'))
