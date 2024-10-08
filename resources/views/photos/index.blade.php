@@ -1,58 +1,55 @@
 @extends('layouts.app')
 
+@section('title', 'Halaman Foto')
+
 @section('content')
 <div class="container">
-    <div class="row">
+    <div class="row justify-content-center">
         <div class="col-md-8">
-            <!-- // Tombol tambah foto -->
             <a href="{{ route('photos.create') }}" class="btn btn-success mb-3">Tambah Foto</a>
 
-            <!-- // cari -->
+            <!-- Search form -->
             <form action="{{ request()->url() }}" method="GET" class="mb-3">
-                <input type="text" name="search" placeholder="Search photos or users" class="form-control" value="{{ request('search') }}">
-                <button type="submit" class="btn btn-primary mt-2">Search</button>
+                <div class="input-group">
+                    <input type="text" name="search" placeholder="Search photos or users" class="form-control" value="{{ request('search') }}">
+                    <button type="submit" class="btn btn-primary">Search</button>
+                </div>
             </form>
 
+            <!-- Photo Cards -->
             @foreach($photos as $photo)
-            <div class="card mb-3 shadow" style="border: none; border-radius: 15px; overflow: hidden;">
-                <!-- // Card Header -->
-                <div class="card-header d-flex justify-content-between align-items-center bg-white" style="padding: 10px;">
+            <div class="card card-custom mb-4">
+                <div class="card-header card-header-custom">
                     <div class="d-flex align-items-center">
                         <img src="{{ asset('storage/' . $photo->user->profile_photo) }}" alt="Profile" class="rounded-circle" style="width: 50px; height: 50px;">
-                        <div class="ml-3">
-                            <strong class="font-weight-bold" style="font-size: 1.2em;">{{ $photo->user->name }}</strong><br>
+                        <div class="ms-3">
+                            <strong>{{ $photo->user->name }}</strong><br>
                             <span class="text-muted small">{{ $photo->created_at->diffForHumans() }}</span>
                         </div>
                     </div>
                 </div>
 
-                <!-- // card bodynya foto -->
                 <div class="card-body p-0">
-                    <img src="{{ asset('storage/' . $photo->photo_path) }}" alt="Photo" class="img-fluid" style="max-height: 500px; object-fit: cover; width: 100%;">
+                    <img src="{{ asset('storage/' . $photo->photo_path) }}" alt="Photo" class="img-fluid card-body-image">
                 </div>
 
-                <!-- // deskripsi dan like -->
-                <div class="card-body" style="padding: 15px;">
-                    <div class="d-flex align-items-center mb-2">
-                        <!-- // tombol suka -->
-                        <button type="button" class="btn btn-light btn-sm d-flex align-items-center" id="like-button-{{ $photo->id }}" onclick="toggleLike({{ $photo->id }}, {{ $photo->likes->contains('user_id', Auth::id()) ? 'true' : 'false' }})">
+                <div class="card-body card-body-custom">
+                    <div class="d-flex align-items-center mb-3">
+                        <!-- Like Button -->
+                        <button class="btn btn-light btn-sm d-flex align-items-center" id="like-button-{{ $photo->id }}" onclick="toggleLike({{ $photo->id }}, {{ $photo->likes->contains('user_id', Auth::id()) ? 'true' : 'false' }})">
                             <i class="{{ $photo->likes->contains('user_id', Auth::id()) ? 'bi bi-heart-fill' : 'bi bi-heart' }}"></i>
-                            <span class="ml-2 text-muted"><strong>{{ $photo->likes->count() }}</strong></span>
+                            <span class="ms-2">{{ $photo->likes->count() }}</span>
                         </button>
-                        <!-- // tombol komentar -->
-                        <a href="javascript:void(0)" class="btn btn-light btn-sm d-flex align-items-center ml-3" onclick="goToComments({{ $photo->id }})">
+                        <!-- Comment Button -->
+                        <a href="javascript:void(0)" class="btn btn-light btn-sm d-flex align-items-center ms-3" onclick="goToComments({{ $photo->id }})">
                             <i class="bi bi-chat"></i>
                         </a>
                     </div>
-
-                    <p class="card-text mb-2" style="font-size: 1em;">{{ $photo->caption }}</p>
+                    <p class="card-text">{{ $photo->caption }}</p>
                 </div>
             </div>
             @endforeach
         </div>
-
-        <!-- User Profile Section (Jika diperlukan) -->
-
     </div>
 </div>
 @endsection
@@ -66,7 +63,7 @@
     function toggleLike(photoId, isLiked) {
         var button = document.getElementById('like-button-' + photoId);
         var heartIcon = button.querySelector('i');
-        var likeCount = button.parentElement.parentElement.querySelector('strong');
+        var likeCount = button.querySelector('span');
         var currentCount = parseInt(likeCount.textContent);
 
         fetch(`{{ route('likes.toggle', '') }}/${photoId}`, {
@@ -90,6 +87,4 @@
             });
     }
 </script>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 @endsection
